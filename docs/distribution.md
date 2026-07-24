@@ -1,6 +1,6 @@
 # Distribution plan
 
-Status: local packaging validated; nothing published
+Status: public package validated and directly installable; skills.sh search indexing pending
 Last checked: 2026-07-23
 
 ## Source of truth
@@ -30,22 +30,27 @@ npx skills add wildcard/codex-to-claude-coordinator \
   -y
 ```
 
-Before publishing, replace the repository slug with the release-candidate
+Before each public update, replace the repository slug with the candidate
 checkout and run the command in a temporary Git repository. Confirm that all
 three skills are discovered, their references and scripts are copied, and the
-validator tests still pass from the installed location.
+validator tests still pass from the installed location. Repeat the command
+against the public source after pushing.
 
 skills.sh search is telemetry-backed. A public Git source does not appear in
-`npx skills find` merely because it exists. After an approved release, one
-normal remote installation with telemetry enabled is needed for indexing. Then
-verify both broad and owner-scoped searches:
+`npx skills find` merely because it exists. After publishing, run a normal
+remote installation with telemetry enabled, then verify both broad and
+owner-scoped searches:
 
 ```sh
 npx skills find "codex claude coordinator"
 npx skills find coordinator --owner wildcard
 ```
 
-Do not add an install-count badge until the public source is stable.
+The current public package passes remote installation and has canonical
+skills.sh pages, but the search API has not yet returned it. Treat page
+availability, direct installation, registry audit, and search inclusion as
+separate observations. Do not add an install-count badge until search indexing
+and the public source are stable.
 
 The CLI can also project one skill into a temporary, single-run prompt without
 installing it:
@@ -54,14 +59,14 @@ installing it:
 npx skills use wildcard/codex-to-claude-coordinator@coordination-core
 ```
 
-The local equivalent, reproduced against the release candidate, is
+The local equivalent, reproduced against the published package, is
 `npx skills use . --skill coordination-core`. It includes the skill instructions
 and a temporary path containing its referenced support files.
 
 ## Claude Code marketplace
 
 The repository is both the marketplace root and the single plugin source.
-Before an approved release:
+Before each release:
 
 ```sh
 claude plugin validate --strict .
@@ -111,8 +116,9 @@ ready for approval only when:
 8. `scripts/verify_launch.py` passes;
 9. an isolated `skills` CLI rehearsal installs all three skills for Codex and
    the other named harnesses;
-10. publication and skills.sh indexing remain explicit external gates until
-    observed.
+10. the public origin revision, direct remote installation, registry page and
+    audit state, and `skills find` inclusion are recorded as separate external
+    gates.
 
 ## Primary references
 

@@ -1,12 +1,12 @@
 # Launch readiness
 
-Status: local release candidate; publication not authorized
+Status: public three-skill package; skills.sh search indexing pending
 Last checked: 2026-07-23
-Published baseline: `bb0cfec535712abe2f0b4b747a1941f04540df12`
+Release payload commit: `7e5e2e3f4e35ac2cb51b77614cec09ee47a3997f`
 
 This page separates a valid package from a published and discoverable release.
-Local success does not imply that the public repository, a marketplace, or
-skills.sh contains the release candidate.
+Public source and direct installation do not imply that a marketplace or the
+skills.sh search index has ingested the same revision.
 
 ## Release evidence
 
@@ -21,9 +21,10 @@ skills.sh contains the release candidate.
 | Claude plugin package | `claude plugin validate --strict .` accepts the local repository; Claude Code `2.1.218` loaded `/codex-to-claude-coordinator:coordination-core` and returned the exact fixture result even with all tools disabled | Pass |
 | Codex runtime invocation | Fresh Codex CLI `0.146.0-alpha.3` with GPT-5.6 Sol loaded the isolated `$coordination-core` install both explicitly and from an implicit description match, ran its classifier at low or no reasoning effort, and returned schema-conforming output under a read-only sandbox | Pass |
 | goose runtime invocation | goose `1.37.0` listed all three skills from the isolated install; interactive `/skills coordination-core` loaded the skill, reference, script, and schema and returned the expected fixture classification | Pass with invocation caveat |
-| Public repository contents | `wildcard/codex-to-claude-coordinator` still resolves to the published baseline, not this local release candidate | Blocked on approved publication |
-| skills.sh discovery | Owner-scoped and broad searches return no matching `wildcard` skill | Blocked on approved publication and indexing |
-| Claude marketplace install | Install the released plugin from its public marketplace source | Blocked on approved publication |
+| Public repository contents | Public `main` contains the release payload introduced at `7e5e2e3`; remote `skills --list` discovers all three skills | Pass |
+| skills.sh package pages and direct install | The repository and all three skill pages resolve; telemetry-enabled multi-skill and one-skill remote installs succeed; all three registry audit providers return safe or low-risk results | Pass |
+| skills.sh CLI search | Owner-scoped, exact-name, and broad searches still return no matching `wildcard` skill even though the canonical pages resolve | Pending registry search index |
+| Claude marketplace install | Install the released plugin from its public marketplace source | Not yet observed |
 
 ## Deterministic local gate
 
@@ -96,8 +97,9 @@ activation as unknown until reproduced with a version-pinned adapter.
 ## Public discovery gate
 
 The skills.sh FAQ says skills are indexed automatically from anonymous install
-telemetry. Therefore launch requires an approved public update followed by at
-least one ordinary remote install with telemetry enabled. Then run:
+telemetry. The public update and ordinary telemetry-enabled remote installs are
+complete. The canonical repository and skill pages resolve, but the search API
+and `skills find` can lag or disagree with those pages. Run:
 
 ```sh
 npx skills find "codex claude coordinator"
@@ -106,11 +108,12 @@ npx skills add wildcard/codex-to-claude-coordinator --list
 ```
 
 Pass only when the searches return the expected repository and the remote list
-contains all three current skills. Until then, describe the project as locally
-validated but not externally discoverable.
+contains all three current skills. Until then, describe the package as public
+and directly installable, but not discoverable through `skills find`.
 
 ## External-action boundary
 
 Committing, pushing, tagging, publishing, adding a marketplace, and performing
-the indexing install are separate actions. None is implied by a green local
-gate. They require explicit human authorization.
+an indexing install are separate actions. The public push and indexing installs
+recorded above were explicitly authorized; future external actions still require
+explicit human authorization.

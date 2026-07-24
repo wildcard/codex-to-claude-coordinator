@@ -68,10 +68,9 @@ Install for every agent recognized by the current `skills` CLI:
 npx skills add wildcard/codex-to-claude-coordinator --all
 ```
 
-The published repository currently contains the baseline skill. The three-skill
-release candidate documented here becomes available through those commands only
-after an approved release. Until then, replace the repository slug with the path
-to a local checkout.
+The public repository contains the current three-skill package. For local
+authoring or unreleased changes, replace the repository slug with the path to a
+local checkout.
 
 For Claude Code plugin development, validate and load the repository directly:
 
@@ -119,8 +118,7 @@ the skill:
 npx skills use wildcard/codex-to-claude-coordinator@coordination-core
 ```
 
-That remote form becomes current only after the approved three-skill release.
-For a local checkout, use
+The remote form uses the current public package. For a local checkout, use
 `npx skills use . --skill coordination-core`.
 
 ## Privacy

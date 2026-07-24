@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claude Delegation Coordinator"
+  short_description: "Coordinate Claude sessions with quota-aware models"
+  default_prompt: "Use $claude-delegation-coordinator to delegate, steer, review, and finish this Claude task."

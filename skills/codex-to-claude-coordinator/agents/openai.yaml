@@ -1,0 +1,4 @@
+interface:
+  display_name: "Codex to Claude Coordinator"
+  short_description: "Coordinate Claude sessions with quota-aware models"
+  default_prompt: "Use $codex-to-claude-coordinator to delegate, steer, review, and finish this Claude task."

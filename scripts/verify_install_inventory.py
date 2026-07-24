@@ -14,20 +14,13 @@ EXPECTED_SKILLS = {
     "coordination-conformance",
     "coordination-core",
 }
-EXPECTED_AGENTS = {
-    "Claude Code",
-    "Codex",
-    "Cursor",
-    "GitHub Copilot",
-    "Goose",
-    "OpenHands",
+INSTALL_ROOT_AGENTS = {
+    ".agents/skills": ("Codex", "Cursor", "GitHub Copilot"),
+    ".claude/skills": ("Claude Code",),
+    ".goose/skills": ("Goose",),
+    ".openhands/skills": ("OpenHands",),
 }
-NATIVE_ROOTS = (
-    ".agents/skills",
-    ".claude/skills",
-    ".goose/skills",
-    ".openhands/skills",
-)
+REQUIRED_DISTINCT_ROOT_LABELS = {"Claude Code", "Goose", "OpenHands"}
 REQUIRED_SUPPORT_FILES = (
     "coordination-core/scripts/classify.py",
     "coordination-core/schemas/envelope.schema.json",
@@ -55,15 +48,25 @@ def validate(inventory_path: Path, install_root: Path) -> list[str]:
             f"found {sorted(entries)}"
         )
     for skill_name in sorted(EXPECTED_SKILLS):
-        agents = set(entries.get(skill_name, {}).get("agents", []))
-        missing = EXPECTED_AGENTS - agents
-        if missing:
-            errors.append(f"{skill_name}: missing agents {sorted(missing)}")
-        for native_root in NATIVE_ROOTS:
+        agents = entries.get(skill_name, {}).get("agents")
+        if not isinstance(agents, list) or not all(
+            isinstance(agent, str) for agent in agents
+        ):
+            errors.append(f"{skill_name}: inventory agents must be a string array")
+        else:
+            missing_labels = REQUIRED_DISTINCT_ROOT_LABELS - set(agents)
+            if missing_labels:
+                errors.append(
+                    f"{skill_name}: missing distinct-root inventory agents "
+                    f"{sorted(missing_labels)}"
+                )
+        for native_root, agent_names in INSTALL_ROOT_AGENTS.items():
             skill_file = install_root / native_root / skill_name / "SKILL.md"
             if not skill_file.is_file():
                 errors.append(
-                    f"{skill_name}: missing native install {skill_file.relative_to(install_root)}"
+                    f"{skill_name}: missing native install "
+                    f"{skill_file.relative_to(install_root)} for "
+                    f"{', '.join(agent_names)}"
                 )
 
     canonical = install_root / ".agents" / "skills"

@@ -24,3 +24,5 @@ All notable changes to the public coordination package are recorded here.
   fields, UTF-8 package checks, link parsing, and timestamp-based summaries.
 - Document the reproducible namespaced Claude plugin invocation separately from
   nondeterministic plain-English activation.
+- Make isolated-install verification portable to headless Linux by validating
+  harness install roots instead of host-dependent detected-agent labels.

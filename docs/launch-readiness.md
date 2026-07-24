@@ -58,9 +58,14 @@ python /path/to/codex-to-claude-coordinator/scripts/verify_install_inventory.py 
   --install-root "$PWD"
 ```
 
-Pass only when the JSON inventory contains all three skill names and each
-selected agent. Inspect the copied skill folders, not only the CLI summary, to
-confirm that referenced scripts, schemas, and guidance were included.
+Pass only when the JSON inventory contains all three skill names and every
+selected harness root contains each copied skill. Codex, Cursor, and GitHub
+Copilot share `.agents/skills`; Claude Code, Goose, and OpenHands use their own
+roots. The CLI's `agents` labels describe harnesses detected on the current
+host, so a headless Linux runner may omit universal-root labels even after an
+explicit successful install. The verifier still requires the distinct-root
+labels for Claude Code, Goose, and OpenHands. Inspect the copied roots and
+supporting files, not universal-root display labels or only the CLI summary.
 
 ## Runtime invocation notes
 

@@ -13,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 EXPECTED_SKILLS = {
+    "claude-to-codex-coordinator",
     "codex-to-claude-coordinator",
     "coordination-conformance",
     "coordination-core",
@@ -29,6 +30,7 @@ REQUIRED_PLUGIN_KEYWORDS = {
     "codex",
     "claude",
     "claude-code",
+    "codex-plugin-cc",
     "multi-agent",
     "cross-harness",
 }
@@ -213,6 +215,10 @@ def check() -> list[str]:
         errors.append("Claude plugin: unexpected name")
     if codex_manifest.get("version") != claude_manifest.get("version"):
         errors.append("plugin manifest versions are not synchronized")
+    if marketplace.get("metadata", {}).get("version") != claude_manifest.get(
+        "version"
+    ):
+        errors.append("Claude marketplace metadata version is not synchronized")
     if codex_manifest.get("skills") != "./skills/":
         errors.append("Codex plugin: skills must point to ./skills/")
     if claude_manifest.get("skills") != ["./skills/"]:
@@ -253,12 +259,16 @@ def check() -> list[str]:
         or plugins[0].get("source") != "./"
     ):
         errors.append("Claude marketplace must expose this repository as one plugin")
+    elif plugins[0].get("version") != claude_manifest.get("version"):
+        errors.append("Claude marketplace plugin version is not synchronized")
 
     readme = (ROOT / "README.md").read_text(encoding="utf-8")
     required_readme_fragments = (
         "npx skills add wildcard/codex-to-claude-coordinator",
         "--agent codex",
         "/codex-to-claude-coordinator:coordination-core",
+        "openai/codex-plugin-cc",
+        "/codex:rescue",
         "docs/launch-readiness.md",
     )
     for fragment in required_readme_fragments:
@@ -314,7 +324,7 @@ def main() -> int:
             print(f"- {error}", file=sys.stderr)
         return 1
     print(
-        "Launch verification passed: 3 skills, synchronized manifests, "
+        "Launch verification passed: 4 skills, synchronized manifests, "
         "complete references, executable scripts, and privacy boundary."
     )
     return 0

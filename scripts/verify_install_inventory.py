@@ -10,6 +10,7 @@ from pathlib import Path
 
 
 EXPECTED_SKILLS = {
+    "claude-to-codex-coordinator",
     "codex-to-claude-coordinator",
     "coordination-conformance",
     "coordination-core",
@@ -27,6 +28,8 @@ REQUIRED_SUPPORT_FILES = (
     "coordination-conformance/scripts/validate.py",
     "coordination-conformance/references/evidence-policy.md",
     "codex-to-claude-coordinator/agents/openai.yaml",
+    "claude-to-codex-coordinator/scripts/probe.py",
+    "claude-to-codex-coordinator/references/openai-codex-plugin-cc.md",
 )
 
 
@@ -88,7 +91,7 @@ def main() -> int:
             print(f"- {error}", file=sys.stderr)
         return 1
     print(
-        "Install inventory verification passed: 3 skills across Codex, "
+        "Install inventory verification passed: 4 skills across Codex, "
         "Claude Code, Cursor, GitHub Copilot, Goose, and OpenHands."
     )
     return 0

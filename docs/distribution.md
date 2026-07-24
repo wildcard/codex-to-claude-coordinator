@@ -1,6 +1,6 @@
 # Distribution plan
 
-Status: public package validated and directly installable; skills.sh search indexing pending
+Status: local 0.2 four-skill candidate; public 0.1 package remains directly installable
 Last checked: 2026-07-23
 
 ## Source of truth
@@ -12,7 +12,7 @@ skill content.
 
 Versioned releases should contain:
 
-- all three skill directories, including referenced schemas and scripts;
+- all four skill directories, including referenced schemas and scripts;
 - `.claude-plugin/plugin.json` and `.claude-plugin/marketplace.json`;
 - `.codex-plugin/plugin.json`;
 - tests and the evidence-backed compatibility report;
@@ -32,7 +32,7 @@ npx skills add wildcard/codex-to-claude-coordinator \
 
 Before each public update, replace the repository slug with the candidate
 checkout and run the command in a temporary Git repository. Confirm that all
-three skills are discovered, their references and scripts are copied, and the
+four skills are discovered, their references and scripts are copied, and the
 validator tests still pass from the installed location. Repeat the command
 against the public source after pushing.
 
@@ -87,8 +87,25 @@ Claude plugin skills are namespaced. Test the portable core directly with:
 /codex-to-claude-coordinator:coordination-core
 ```
 
+The reverse adapter depends on OpenAI's separate official marketplace plugin:
+
+```text
+/plugin marketplace add openai/codex-plugin-cc
+/plugin install codex@openai-codex
+/reload-plugins
+/codex:setup
+```
+
+Do not vendor its runtime or silently enable its optional stop-review gate.
+Test the adapter skill through:
+
+```text
+/codex-to-claude-coordinator:claude-to-codex-coordinator
+```
+
 The plugin version in `.claude-plugin/plugin.json` must change for every
-versioned release. A release candidate must prove that cached installation
+versioned release. Keep that version synchronized with the marketplace metadata
+and plugin entry. A release candidate must prove that cached installation
 contains all referenced files; plugins cannot depend on paths outside their
 copied directory.
 
@@ -97,7 +114,7 @@ copied directory.
 Codex discovers repository skills under `.agents/skills` and user skills under
 `$HOME/.agents/skills`. The `skills` CLI maps the source package into the
 selected scope. The repository also contains a Codex plugin manifest so the same
-three skills can be distributed together through Codex plugin surfaces.
+four skills can be distributed together through Codex plugin surfaces.
 
 ## Release gate
 
@@ -105,7 +122,7 @@ Publication remains a human-approved external action. A release candidate is
 ready for approval only when:
 
 1. portable unit tests pass;
-2. all three skills validate;
+2. all four skills validate;
 3. both plugin manifests validate;
 4. local Claude plugin loading succeeds;
 5. local Codex skill discovery succeeds;
@@ -114,7 +131,7 @@ ready for approval only when:
 7. the compatibility report labels documented, observed, inferred, and unknown
    claims separately.
 8. `scripts/verify_launch.py` passes;
-9. an isolated `skills` CLI rehearsal installs all three skills for Codex and
+9. an isolated `skills` CLI rehearsal installs all four skills for Codex and
    the other named harnesses;
 10. the public origin revision, direct remote installation, registry page and
     audit state, and `skills find` inclusion are recorded as separate external
@@ -125,3 +142,4 @@ ready for approval only when:
 - [skills.sh documentation](https://www.skills.sh/docs)
 - [Claude Code marketplace documentation](https://code.claude.com/docs/en/plugin-marketplaces)
 - [Codex skill documentation](https://developers.openai.com/codex/skills)
+- [OpenAI Codex plugin for Claude Code](https://github.com/openai/codex-plugin-cc)

@@ -3,12 +3,16 @@
   "owner": {
     "name": "wildcard"
   },
-  "description": "Portable coordination skills and harness adapters.",
+  "description": "Portable coordination skills and bidirectional Codex and Claude adapters.",
+  "metadata": {
+    "version": "0.2.0"
+  },
   "plugins": [
     {
       "name": "codex-to-claude-coordinator",
       "source": "./",
-      "description": "Coordinate delegated agent work through evidence-driven lifecycle contracts."
+      "version": "0.2.0",
+      "description": "Coordinate delegated agent work in both directions through evidence-driven lifecycle contracts."
     }
   ]
 }

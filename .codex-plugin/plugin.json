@@ -1,7 +1,7 @@
 {
   "name": "codex-to-claude-coordinator",
-  "version": "0.1.0",
-  "description": "Portable coordination contracts and a Codex adapter for supervised Claude work.",
+  "version": "0.2.0",
+  "description": "Portable coordination contracts and bidirectional Codex and Claude harness adapters.",
   "author": {
     "name": "wildcard",
     "url": "https://github.com/wildcard"
@@ -15,15 +15,17 @@
     "claude-code",
     "multi-agent",
     "cross-harness",
+    "bidirectional",
+    "codex-plugin-cc",
     "coordination",
     "orchestration",
     "delegation"
   ],
   "skills": "./skills/",
   "interface": {
-    "displayName": "Codex to Claude Coordinator",
+    "displayName": "Cross-Harness Coordinator",
     "shortDescription": "Coordinate agent work across harnesses.",
-    "longDescription": "Classify, delegate, steer, review, stop, and hand off agent work through portable evidence contracts and a Codex-to-Claude adapter.",
+    "longDescription": "Classify, delegate, steer, review, stop, and hand off work through portable evidence contracts and bidirectional Codex and Claude adapters.",
     "developerName": "wildcard",
     "category": "Productivity",
     "capabilities": ["Interactive", "Write"],
@@ -31,7 +33,7 @@
     "defaultPrompt": [
       "Coordinate this delegated task across agent harnesses.",
       "Classify and supervise this multi-agent implementation.",
-      "Compare harness capabilities with privacy-safe evidence."
+      "Coordinate a Claude-to-Codex delegation with evidence."
     ]
   }
 }

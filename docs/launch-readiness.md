@@ -1,6 +1,6 @@
 # Launch readiness
 
-Status: public three-skill package; skills.sh search indexing pending
+Status: local 0.2 four-skill candidate; public 0.1 search indexing pending
 Last checked: 2026-07-23
 Release payload commit: `7e5e2e3f4e35ac2cb51b77614cec09ee47a3997f`
 
@@ -12,19 +12,21 @@ skills.sh search index has ingested the same revision.
 
 | Requirement | Evidence | State |
 | --- | --- | --- |
-| Three Agent Skills packages | `npx skills add . --list` discovers `coordination-core`, `coordination-conformance`, and `codex-to-claude-coordinator` | Pass |
+| Four Agent Skills packages | `npx skills add . --list` also discovers the new `claude-to-codex-coordinator` adapter | Pass locally |
 | Codex-compatible metadata | Every skill has matching frontmatter and `agents/openai.yaml`; `scripts/verify_launch.py` checks explicit `$skill-name` prompts | Pass |
 | Portable behavior | Unit tests cover classification, lifecycle envelopes, privacy, usage-signal eligibility, and stop semantics | Pass |
 | Python runtime range | CI tests Python 3.9 and 3.12; the image-redaction dependency is pinned to the newest Pillow line that retains Python 3.9 support | Pass |
-| Codex package installation | Isolated `skills` CLI rehearsal copies all three skills and supporting files for the `codex` agent | Pass |
+| Codex package installation | Isolated `skills` CLI rehearsal copies all four skills and supporting files for the `codex` agent | Pass locally |
 | Multi-agent package installation | The same rehearsal targets Claude Code, Cursor, GitHub Copilot, Goose, and OpenHands | Pass |
 | Claude plugin package | `claude plugin validate --strict .` accepts the local repository; Claude Code `2.1.218` loaded `/codex-to-claude-coordinator:coordination-core` and returned the exact fixture result even with all tools disabled | Pass |
+| Official Claude-to-Codex runtime | Claude Code `2.1.218` installed `codex@openai-codex` `1.0.6`; `/codex:setup` reported ready with the optional review gate disabled | Pass on this machine |
+| Claude-to-Codex delegation | A fresh, read-only `/codex:rescue --wait --fresh` task returned the expected active-repository heading through Codex app server without changing files | Pass on this machine |
 | Codex runtime invocation | Fresh Codex CLI `0.146.0-alpha.3` with GPT-5.6 Sol loaded the isolated `$coordination-core` install both explicitly and from an implicit description match, ran its classifier at low or no reasoning effort, and returned schema-conforming output under a read-only sandbox | Pass |
 | goose runtime invocation | goose `1.37.0` listed all three skills from the isolated install; interactive `/skills coordination-core` loaded the skill, reference, script, and schema and returned the expected fixture classification | Pass with invocation caveat |
-| Public repository contents | Public `main` contains the release payload introduced at `7e5e2e3`; remote `skills --list` discovers all three skills | Pass |
+| Public repository contents | Public `main` contains the 0.1 payload introduced at `7e5e2e3`; remote `skills --list` discovers the original three skills, not the local 0.2 adapter | Publication pending for 0.2 |
 | skills.sh package pages and direct install | The repository and all three skill pages resolve; telemetry-enabled multi-skill and one-skill remote installs succeed; all three registry audit providers return safe or low-risk results | Pass |
 | skills.sh CLI search | Owner-scoped, exact-name, and broad searches still return no matching `wildcard` skill even though the canonical pages resolve | Pending registry search index |
-| Claude marketplace install | Install the released plugin from its public marketplace source | Not yet observed |
+| Project Claude marketplace install | Claude Code `2.1.218` registered the local checkout as a user marketplace, installed the `0.2.0` plugin with all four skills, and a fresh tool-disabled process invoked the namespaced reverse adapter successfully | Pass locally; public 0.2 publication pending |
 
 ## Deterministic local gate
 
@@ -59,7 +61,7 @@ python /path/to/codex-to-claude-coordinator/scripts/verify_install_inventory.py 
   --install-root "$PWD"
 ```
 
-Pass only when the JSON inventory contains all three skill names and every
+Pass only when the JSON inventory contains all four skill names and every
 selected harness root contains each copied skill. Codex, Cursor, and GitHub
 Copilot share `.agents/skills`; Claude Code, Goose, and OpenHands use their own
 roots. The CLI's `agents` labels describe harnesses detected on the current
@@ -67,6 +69,19 @@ host, so a headless Linux runner may omit universal-root labels even after an
 explicit successful install. The verifier still requires the distinct-root
 labels for Claude Code, Goose, and OpenHands. Inspect the copied roots and
 supporting files, not universal-root display labels or only the CLI summary.
+
+## Reverse adapter notes
+
+The `claude-to-codex-coordinator` skill composes the portable ledger with
+OpenAI's official `codex-plugin-cc`; it does not copy the upstream Node runtime.
+The local privacy-safe probe confirms Claude, Node, Codex authentication, and
+the installed plugin without emitting account labels or absolute install paths.
+
+The official plugin supports fresh and resumed Codex turns, background status,
+stored results, cancellation, code review, and explicit transcript transfer.
+It does not expose arbitrary mid-turn steering or a normal result field proving
+the actual resolved model. Those capabilities remain `partial` and `unknown`
+respectively.
 
 ## Runtime invocation notes
 
@@ -84,6 +99,12 @@ same headless setup, a plain-English request to "use coordination-core" did not
 reliably activate the plugin skill and produced invented fields. Direct
 namespaced invocation is therefore the reproducible Claude conformance path;
 automatic model invocation remains a separate behavior to test.
+
+The local `0.2.0` marketplace install also exposed
+`/codex-to-claude-coordinator:claude-to-codex-coordinator` in a fresh process.
+With tools disabled, the adapter mapped a hypothetical read-only review to
+`/codex:review`, kept `permission_mode` read-only, and reported the unresolved
+actual model as `unknown`.
 
 goose `1.37.0` discovered the same `.agents/skills` packages. In the observed
 configuration, a headless natural-language request attempted the separate
@@ -108,8 +129,9 @@ npx skills add wildcard/codex-to-claude-coordinator --list
 ```
 
 Pass only when the searches return the expected repository and the remote list
-contains all three current skills. Until then, describe the package as public
-and directly installable, but not discoverable through `skills find`.
+contains the expected published skills. Until the 0.2 candidate is separately
+approved and pushed, describe the public package as the three-skill 0.1 release
+and the reverse adapter as locally validated only.
 
 ## External-action boundary
 

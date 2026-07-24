@@ -4,12 +4,16 @@ All notable changes to the public coordination package are recorded here.
 
 ## Unreleased
 
+No unreleased changes.
+
+## 0.2.0 - 2026-07-24
+
 - Split the vendor-neutral coordination lifecycle from the Codex-to-Claude
   adapter.
 - Add deterministic task classification, lifecycle envelopes, schemas, and
   validators.
 - Add a privacy-safe conformance kit for harness and usage-signal experiments.
-- Package the three skills for Codex, Claude Code, the `skills` CLI, and other
+- Package the four skills for Codex, Claude Code, the `skills` CLI, and other
   Agent Skills-compatible harnesses.
 - Add Experiment 0 and Experiment 1 protocols, launch verification, isolated
   install checks, and continuous integration.
@@ -26,3 +30,8 @@ All notable changes to the public coordination package are recorded here.
   nondeterministic plain-English activation.
 - Make isolated-install verification portable to headless Linux by validating
   harness install roots instead of host-dependent detected-agent labels.
+- Add a `claude-to-codex-coordinator` adapter around OpenAI's official
+  `codex-plugin-cc`, including a privacy-safe prerequisite probe, explicit
+  resume/cancel semantics, transcript-transfer boundaries, and model-evidence
+  gaps.
+- Synchronize Claude marketplace versions with both plugin manifests.

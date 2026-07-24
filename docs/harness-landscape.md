@@ -11,6 +11,7 @@ This document answers the first research question: who else can perform the coor
 | --- | --- | --- |
 | Codex | Multiple project tasks, worktrees, subagents, handoff, and Codex-as-MCP workflows | Strong outer coordinator and reference adapter |
 | Claude Code | Scoped JSON session inventory, logs, replies, stop, per-session models, worktree isolation, custom subagents, agent teams, hooks, permissions, and Agent SDK | Strong Claude-native coordinator inside its own execution boundary; agent view is a research preview |
+| Claude Code + OpenAI Codex plugin | Official Codex app-server delegation, native review, background jobs, status, results, cancel, resume, and Claude-session transfer | Strong inverse adapter for Claude-to-Codex work; mid-turn steering, quota signals, and actual-model evidence remain gaps |
 | Claude Desktop Cowork | Long-running tasks, connectors, browser control, and artifacts | Useful knowledge-work executor; programmable lifecycle parity remains unproven |
 | Claude Dispatch | Cowork coordinator that decomposes outcomes into child Cowork or Code sessions, exposes status and transcripts, and forwards approvals | Strong Claude-native outer coordinator for Cowork and Code; no public programmatic API or model/quota controls documented |
 | GitHub Copilot cloud agent | Issue-to-draft-PR execution, follow-up through review comments, custom agents, hooks, and skills | Strong GitHub-scoped executor; weaker for cross-app orchestration |
@@ -102,6 +103,39 @@ content and explicit interactive invocation passed. Unattended implicit
 invocation remains unknown, and autonomous permission mode is not an acceptable
 workaround outside a disposable sandbox.
 
+## Local Claude-to-Codex probe
+
+OpenAI's official
+[`codex-plugin-cc`](https://github.com/openai/codex-plugin-cc) is the inverse of
+this project's first adapter: Claude Code coordinates Codex through the local
+Codex CLI and app server. Source revision
+`db52e28f4d9ded852ab3942cea316258ae4ef346` (`v1.0.6`) exposes:
+
+- read-only native and adversarial review commands;
+- a thin `codex-rescue` forwarding subagent for investigation and
+  implementation;
+- fresh and resumed Codex task threads;
+- foreground and repository-scoped background jobs;
+- status, stored results, cancel, and Claude-session transfer;
+- session lifecycle hooks and an optional stop-time review gate;
+- explicit model and effort inputs, while leaving both unset by default.
+
+Observed on Claude Code `2.1.218` and Codex CLI `0.145.0` on 2026-07-23:
+
+- the official plugin installed and enabled at version `1.0.6`;
+- the setup command reported Codex ready using the existing authentication and
+  left the optional review gate disabled;
+- a fresh read-only rescue task returned the expected first heading from the
+  active repository with no file changes;
+- the upstream package passed all 91 source tests;
+- the setup surface can expose an account label, so raw setup output is private
+  runtime material and was not admitted to this repository.
+
+The adapter can steer between completed turns through resume and can cancel an
+active turn. It does not document arbitrary mid-turn instruction injection, a
+named-model quota percentage, or a normal job field proving the actual resolved
+model. These remain partial, unavailable, and unknown respectively.
+
 ## Audit disposition
 
 The table below is the first-party documentation audit. It remains distinct from
@@ -110,6 +144,7 @@ the authenticated local probe above: “documented” is not “locally reproduc
 | Harness | First-party lifecycle facts verified | Still unknown or overstated |
 | --- | --- | --- |
 | Codex | Subagents and isolated worktrees are documented | Cross-product quota normalization is not established |
+| Claude Code + OpenAI Codex plugin | Review, rescue, background jobs, resume, status, result, cancel, transfer, app-server reuse, and explicit model/effort flags are implemented in OpenAI's public repository | Mid-turn steer, named-model quota, and actual resolved-model evidence |
 | Claude Dispatch | Cowork/Code routing, child states and transcripts, follow-ups, and forwarded approvals are documented | Public API, model control, quota inspection, and stop semantics |
 | Claude Code | Agent view documents scoped JSON inventory, logs, reply/attach, stop, background persistence, and per-session model control; Agent SDK documents sessions, permissions, hooks, and subagents | Account quota is not documented as a fresh named-model consumed percentage |
 | GitHub Copilot cloud agent | Branch-based background work, ephemeral Actions environment, tests, iteration, and optional pull requests are documented | General cross-app session control and model-specific quota facts |
@@ -131,6 +166,7 @@ positive evidence before enabling threshold automation.
 - [Codex subagents](https://developers.openai.com/codex/subagents)
 - [Codex as an MCP server](https://developers.openai.com/codex/mcp-server)
 - [Codex `AGENTS.md`](https://developers.openai.com/codex/agent-configuration/agents-md)
+- [OpenAI Codex plugin for Claude Code](https://github.com/openai/codex-plugin-cc)
 
 ### Anthropic
 

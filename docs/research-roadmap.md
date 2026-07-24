@@ -96,7 +96,35 @@ Acceptance evidence:
 - deterministic stop and resume;
 - documented gaps for usage and model selection.
 
-## Experiment 4: cross-harness conformance
+## Experiment 4: inverse Claude-to-Codex coordination
+
+Question: Can Claude Code coordinate Codex through OpenAI's official plugin
+while preserving the portable lifecycle and evidence boundaries?
+
+Method:
+
+1. Install and probe `codex@openai-codex` without enabling the stop-review gate.
+2. Run one fresh read-only task and verify the result against the repository.
+3. Run one background task through status, result, and cancel.
+4. Resume a completed task with one delta instruction.
+5. Record requested model and effort separately from the actual resolved model.
+6. Test transcript transfer only with an explicit privacy-approved synthetic
+   Claude session.
+
+Acceptance evidence:
+
+- privacy-safe prerequisite report;
+- fresh and resumed Codex thread identifiers;
+- background state transitions and deterministic cancellation;
+- exact working-tree and test evidence;
+- explicit `unknown` for any model or quota fact the runtime does not expose;
+- no cross-project transcript or unauthorized external action.
+
+The first read-only fresh-task probe passes. Background lifecycle, resume,
+cancel, and synthetic transfer remain to be recorded through
+`coordination-conformance`.
+
+## Experiment 5: cross-harness conformance
 
 Question: Which other harness can satisfy the same portable adapter contract?
 
@@ -134,6 +162,7 @@ outside a disposable sandbox.
 - A transcript and evidence redaction policy. **Implemented locally.**
 - A conformance fixture repository. **Implemented locally.**
 - Codex-to-Claude adapter notes.
+- Claude-to-Codex official-plugin adapter. **Implemented locally.**
 - Claude-native adapter prototype.
 - One non-Claude adapter prototype.
 - Versioned, non-hardcoded model-resolution policy.
@@ -164,6 +193,7 @@ availability fallback.
 ### Week 3: Claude adapters
 
 - implement the smallest Claude Code headless or Agent SDK controller;
+- validate the official Claude-to-Codex app-server adapter;
 - run the Dispatch behavior protocol;
 - map official and observed lifecycle states to the portable ledger;
 - verify stop, resume, approval routing, and actual-worker provenance.
@@ -201,8 +231,12 @@ the next adapter on measured behavior, not product claims.
   reproduced on version 2.1.216.
 - Codex explicit and implicit runtime invocation passed the portable
   classification fixture; explicit interactive goose invocation also passed.
+- The official Claude-to-Codex plugin is installed and its fresh read-only
+  rescue path passes; the privacy-safe adapter and prerequisite probe are
+  implemented locally.
 - Quota fidelity, live Dispatch behavior, steering, review collection, and
-  change collection remain untested. Headless implicit goose invocation also
-  remains unproven.
+  change collection remain untested. The reverse adapter's background,
+  resume/cancel, and synthetic transfer cases also remain to be recorded.
+  Headless implicit goose invocation remains unproven.
 - The next bounded run is Experiment 1 `T0` capture, followed by the same
   background fixture with one follow-up steer.

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Claude to Codex Coordinator"
+  short_description: "Delegate Claude work to Codex safely"
+  default_prompt: "Use $claude-to-codex-coordinator to delegate and supervise this Codex task from Claude Code."

@@ -1,6 +1,6 @@
 # Architecture: portable coordinator with harness adapters
 
-Status: portable core 0.1 implemented; adapters remain experimental
+Status: portable core 0.1 implemented; bidirectional adapters remain experimental
 Last checked: 2026-07-23
 
 ## Goal
@@ -98,6 +98,8 @@ skills/
                        # evidence recorder, redactor, capability manifest
   codex-to-claude-coordinator/
                        # Claude-specific adapter policy
+  claude-to-codex-coordinator/
+                       # official codex-plugin-cc adapter policy and probe
 ```
 
 Agent Skills-compatible harnesses should consume the portable skill unchanged
@@ -109,10 +111,19 @@ before gaining convenience commands or UI automation.
 The intended expansion order is:
 
 1. Codex coordinator to Claude Code worker;
-2. Claude Dispatch and Claude Code-native coordinators to Claude Code workers;
-3. Claude Agent SDK as a programmatic adapter;
-4. Codex to Jules or OpenHands as the first non-Claude worker;
-5. Cursor as coordinator or worker after the portable contract is stable.
+2. Claude Code coordinator to Codex through OpenAI's official
+   `codex-plugin-cc`;
+3. Claude Dispatch and Claude Code-native coordinators to Claude Code workers;
+4. Claude Agent SDK as a programmatic adapter;
+5. Codex to Jules or OpenHands as the first non-Claude worker;
+6. Cursor as coordinator or worker after the portable contract is stable.
+
+The reverse adapter demonstrates why the core and transport must stay separate.
+OpenAI's plugin provides a thin Claude forwarding agent, a deterministic Node
+runtime, a shared Codex app-server broker, repository-scoped job state, and
+native Codex threads. This project does not reimplement that transport. It adds
+classification, scope, permission, evidence, review, and handoff policy around
+the officially maintained runtime.
 
 ## Evidence model
 

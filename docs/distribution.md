@@ -1,7 +1,7 @@
 # Distribution plan
 
-Status: local 0.2 four-skill candidate; public 0.1 package remains directly installable
-Last checked: 2026-07-23
+Status: public 0.2 four-skill package is directly installable; search refresh remains pending
+Last checked: 2026-07-24
 
 ## Source of truth
 
@@ -47,10 +47,12 @@ npx skills find coordinator --owner wildcard
 ```
 
 The current public package passes remote installation and has canonical
-skills.sh pages, but the search API has not yet returned it. Treat page
-availability, direct installation, registry audit, and search inclusion as
-separate observations. Do not add an install-count badge until search indexing
-and the public source are stable.
+skills.sh pages. Its original three skills have populated detail documents, and
+the registry audit backend has accepted the new inverse adapter, but the search
+API has not yet returned the package and the inverse detail document has not
+populated. Treat page availability, direct installation, registry audit, and
+search inclusion as separate observations. The README badge reports observed
+registry telemetry; it is not proof that search indexing has completed.
 
 The CLI can also project one skill into a temporary, single-run prompt without
 installing it:
@@ -59,7 +61,7 @@ installing it:
 npx skills use wildcard/codex-to-claude-coordinator@coordination-core
 ```
 
-The local equivalent, reproduced against the published package, is
+The local equivalent, also reproduced against the published package, is
 `npx skills use . --skill coordination-core`. It includes the skill instructions
 and a temporary path containing its referenced support files.
 

@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:coordination-core:classification:0.1",
+  "title": "Coordination classification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "difficulty",
+    "risk",
+    "duration",
+    "coordination",
+    "requested_tier",
+    "reasoning_effort"
+  ],
+  "properties": {
+    "difficulty": {"enum": ["trivial", "standard", "hard"]},
+    "risk": {"enum": ["low", "elevated", "high"]},
+    "duration": {"enum": ["short", "medium", "long"]},
+    "coordination": {"enum": ["single", "fan_out", "team"]},
+    "requested_tier": {"enum": ["routine", "strong", "max"]},
+    "reasoning_effort": {"enum": ["low", "medium", "high"]}
+  }
+}

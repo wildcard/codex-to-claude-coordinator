@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:coordination-experiment:observation:0.1",
+  "title": "Coordination experiment observation",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "observation_id",
+    "experiment",
+    "run_id",
+    "observed_at",
+    "surface",
+    "surface_version",
+    "account_class",
+    "host_platform",
+    "operation",
+    "input_id",
+    "observation",
+    "evidence_files",
+    "evidence_class",
+    "limitations"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "observation_id": {"type": "string", "minLength": 1},
+    "experiment": {"type": "string", "pattern": "^[a-z][a-z0-9-]*$"},
+    "run_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$"},
+    "observed_at": {"type": "string", "format": "date-time"},
+    "surface": {"type": "string", "minLength": 1},
+    "surface_version": {"type": "string", "minLength": 1},
+    "account_class": {
+      "enum": ["pro", "max", "team", "enterprise", "unknown"]
+    },
+    "host_platform": {
+      "enum": ["macos", "windows", "linux", "unknown"]
+    },
+    "operation": {"type": "string", "pattern": "^[a-z][a-z0-9_]*$"},
+    "input_id": {"type": "string", "minLength": 1},
+    "observation": {"type": "object"},
+    "evidence_files": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/evidence"}
+    },
+    "evidence_class": {
+      "enum": ["official-doc", "observed", "advisor", "inference", "unknown"]
+    },
+    "limitations": {
+      "type": "array",
+      "items": {"type": "string", "minLength": 1}
+    }
+  },
+  "$defs": {
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "sha256",
+        "kind",
+        "redacted",
+        "source",
+        "privacy_checked"
+      ],
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+        "kind": {
+          "enum": ["screenshot", "transcript", "artifact", "log"]
+        },
+        "redacted": {"type": "boolean"},
+        "source": {
+          "enum": ["redacted-derivative", "product-export", "synthetic"]
+        },
+        "privacy_checked": {"type": "boolean"}
+      }
+    }
+  }
+}

@@ -1,9 +1,11 @@
 # Research roadmap
 
-Status: planned
+Status: active
 Last checked: 2026-07-23
 
 ## Experiment 0: Claude Dispatch discovery
+
+Implementation protocol: [Experiment 0 and 1 protocols](experiments-0-1.md#experiment-0-dispatch-behavior).
 
 Question: Does the observed `Dispatch Beta` surface behave like the official Dispatch guide?
 
@@ -33,6 +35,8 @@ Known documented baseline:
 - no public lifecycle API or model-selection surface is documented.
 
 ## Experiment 1: quota-signal fidelity
+
+Implementation protocol: [Experiment 0 and 1 protocols](experiments-0-1.md#experiment-1-quota-signal-fidelity).
 
 Question: Can the requested Fable and Opus thresholds be measured from a reliable model-specific signal?
 
@@ -113,12 +117,92 @@ Score:
 - model and quota facts;
 - immutable provenance.
 
+Use `experiments/fixtures/classification-read-only/` as the first zero-write
+runtime check before granting a harness access to the implementation fixture.
+Record skill listing, explicit load, implicit match, support-file access,
+permission behavior, and output equality as separate observations.
+
+The first goose run exposed a meaningful distinction: the interactive
+`/skills` path loaded the portable skill, while a headless natural-language run
+misrouted to `summon.load`. A future goose adapter should use the documented
+skills surface explicitly and must not switch to autonomous permission mode
+outside a disposable sandbox.
+
 ## Planned deliverables
 
-- JSON Schema for the capability manifest.
-- A transcript and evidence redaction policy.
-- A conformance fixture repository.
+- JSON Schema for the capability manifest. **Implemented locally.**
+- A transcript and evidence redaction policy. **Implemented locally.**
+- A conformance fixture repository. **Implemented locally.**
 - Codex-to-Claude adapter notes.
 - Claude-native adapter prototype.
 - One non-Claude adapter prototype.
 - Versioned, non-hardcoded model-resolution policy.
+
+## Four-week implementation cadence
+
+### Week 1: portable contract
+
+- stabilize the six-axis classifier;
+- stabilize the append-only envelope schema and validator;
+- add negative tests for scope escape, coordinator-authored approval, inferred
+  worker identity, and archive-as-stop;
+- keep the portable skill free of vendor names and commands.
+
+Exit criterion: both plugin manifests and all three skills validate, and the
+portable unit suite is green.
+
+### Week 2: evidence recorder and model resolver
+
+- implement the redacted Experiment 0/1 recorder;
+- run quota-signal fidelity without consequential actions;
+- encode Claude model aliases and availability probes in an adapter reference;
+- keep threshold automation disabled unless Experiment 1 passes.
+
+Exit criterion: one privacy-checked local evidence bundle and a deterministic
+availability fallback.
+
+### Week 3: Claude adapters
+
+- implement the smallest Claude Code headless or Agent SDK controller;
+- run the Dispatch behavior protocol;
+- map official and observed lifecycle states to the portable ledger;
+- verify stop, resume, approval routing, and actual-worker provenance.
+
+Exit criterion: one Claude Code run and one Dispatch run validate against the
+same envelope protocol.
+
+### Week 4: bake-off and distribution rehearsal
+
+- run one fixed fixture through Codex-to-Claude, Claude-native-to-Claude, and one
+  non-Claude adapter;
+- compare completion accuracy, human approvals, steers, wall time, and escaped
+  defects;
+- test local installation in Codex and Claude without publishing;
+- prepare, but do not submit, skills.sh and Claude marketplace release assets.
+
+Exit criterion: a versioned evidence report identifies the default pairing and
+the next adapter on measured behavior, not product claims.
+
+## Next bake-offs
+
+1. **Codex to Claude Code versus Dispatch to Claude Code.** Same fixture,
+   acceptance tests, permissions, and evidence ledger.
+2. **Codex to Jules or OpenHands.** Tests whether the portable protocol survives
+   outside the Claude family.
+3. **Cursor to Codex or Claude.** Defer until coordinator and worker roles can be
+   configured independently without changing the core schema.
+
+## Current progress
+
+- Week 1 exit criterion is met locally.
+- The Week 2 recorder, redactor, schema, and capability summarizer are
+  implemented.
+- Claude Code plugin discovery and the scoped start/list/read/stop lifecycle were
+  reproduced on version 2.1.216.
+- Codex explicit and implicit runtime invocation passed the portable
+  classification fixture; explicit interactive goose invocation also passed.
+- Quota fidelity, live Dispatch behavior, steering, review collection, and
+  change collection remain untested. Headless implicit goose invocation also
+  remains unproven.
+- The next bounded run is Experiment 1 `T0` capture, followed by the same
+  background fixture with one follow-up steer.

@@ -1,6 +1,6 @@
 # Harness landscape
 
-Status: initial evidence map
+Status: authoritative-source audit
 Last checked: 2026-07-23
 
 This document answers the first research question: who else can perform the coordination role currently performed by Codex?
@@ -10,7 +10,7 @@ This document answers the first research question: who else can perform the coor
 | Harness | Proven coordination surface | Current assessment |
 | --- | --- | --- |
 | Codex | Multiple project tasks, worktrees, subagents, handoff, and Codex-as-MCP workflows | Strong outer coordinator and reference adapter |
-| Claude Code | Custom subagents, agent teams, background agents, hooks, sessions, permissions, and Agent SDK | Strong Claude-native coordinator inside its own execution boundary |
+| Claude Code | Scoped JSON session inventory, logs, replies, stop, per-session models, worktree isolation, custom subagents, agent teams, hooks, permissions, and Agent SDK | Strong Claude-native coordinator inside its own execution boundary; agent view is a research preview |
 | Claude Desktop Cowork | Long-running tasks, connectors, browser control, and artifacts | Useful knowledge-work executor; programmable lifecycle parity remains unproven |
 | Claude Dispatch | Cowork coordinator that decomposes outcomes into child Cowork or Code sessions, exposes status and transcripts, and forwards approvals | Strong Claude-native outer coordinator for Cowork and Code; no public programmatic API or model/quota controls documented |
 | GitHub Copilot cloud agent | Issue-to-draft-PR execution, follow-up through review comments, custom agents, hooks, and skills | Strong GitHub-scoped executor; weaker for cross-app orchestration |
@@ -29,16 +29,99 @@ Claude can perform much of the role in two different ways:
 
 Anthropic's official Dispatch guide confirms that Dispatch is a long-running Cowork agent. It runs child work as separate Cowork or Code sessions, exposes six task states and full transcripts, forwards permission requests to the human, and allows follow-up messages. Child tasks cannot create further Dispatch children.
 
-The remaining gap is not general reasoning ability. It is product-level control over:
+The remaining gap is not general reasoning ability. Across Dispatch and Claude
+Code, it is consistent product-level control over:
 
 - all relevant desktop sessions;
 - current per-model or plan quota meters;
-- deterministic model switching before every start or steer;
+- deterministic model switching before every start or steer across both products;
 - cross-product transcript normalization;
 - independent review evidence;
 - consistent external-action approval boundaries.
 
-Dispatch can already act as a Claude-native outer coordinator for Cowork and Claude Code. It does not replace a cross-harness coordinator because its documented routing boundary stops at those two surfaces and it exposes no public lifecycle API or model/quota selection controls.
+Current Claude Code documentation materially strengthens its adapter case:
+agent view can list scoped sessions as JSON, print logs, accept replies, stop a
+session, and select or switch a model for individual background sessions.
+Dispatch can already act as a Claude-native outer coordinator for Cowork and
+Claude Code. It does not replace a cross-harness coordinator because its
+documented routing boundary stops at those two surfaces and it exposes no public
+lifecycle API or model/quota selection controls.
+
+## Local Claude Code probe
+
+Observed on Claude Code 2.1.216 on 2026-07-23:
+
+- repository plugin validation and a leading
+  `/codex-to-claude-coordinator:coordination-conformance` invocation succeeded
+  in no-tools print mode;
+- embedding `Use /plugin:skill` inside prose did not invoke the skill in that
+  mode, and the worker correctly declined to invent the unread policy;
+- `claude agents --cwd <project> --json --all` returned a project-scoped JSON
+  inventory;
+- a no-tools background task was created, listed as busy/working, and its
+  expected generic result was readable through its scoped log;
+- after producing the result, inventory showed `status=idle` while
+  `state=working`; idle therefore was not terminal evidence;
+- an explicit stop command was followed by `state=stopped`;
+- the raw log rendered account identity and an absolute project path in its UI
+  chrome, so it is not safe evidence until redacted.
+
+The local capability manifest marks `inspect_capabilities`, `list_sessions`,
+`start_session`, `read_session`, and `stop_session` as passing. It keeps
+`steer_session`, `inspect_usage`, `collect_changes`, and `collect_review`
+unknown. The evidence bundle remains under ignored `experiments/runs/`; no
+identifiers or raw transcript are committed.
+
+A later plugin run on Claude Code `2.1.218` reproduced the portable
+classification fixture with all tools disabled after the exact version `0.1`
+rules were moved into the main skill. Before that change, the same tool-less
+surface invented invalid field names and values instead of reading supporting
+files. This establishes an important packaging rule: a skill that must work on
+instruction-only surfaces needs its minimal decision contract in `SKILL.md`;
+supporting scripts remain the deterministic verifier, not the only copy of the
+rules.
+
+## Local cross-harness skill probe
+
+Observed on 2026-07-23:
+
+- Codex CLI `0.146.0-alpha.3` with GPT-5.6 Sol loaded the isolated
+  `coordination-core` skill explicitly and through an implicit description
+  match, read its support files, ran its classifier, and returned the expected
+  six-field output under a read-only sandbox.
+- goose `1.37.0` listed all three isolated skills from `.agents/skills`.
+- goose's interactive `/skills coordination-core` command used its
+  `load_skill` mechanism to load the skill, reference, script, and schema and
+  returned the same expected classification.
+- a headless goose natural-language request attempted the separate
+  `summon.load` surface and could not resolve the skill. Smart-approval mode
+  also cannot service a headless approval prompt.
+
+The finding is narrower than “goose fully supports the adapter.” Portable skill
+content and explicit interactive invocation passed. Unattended implicit
+invocation remains unknown, and autonomous permission mode is not an acceptable
+workaround outside a disposable sandbox.
+
+## Audit disposition
+
+The table below is the first-party documentation audit. It remains distinct from
+the authenticated local probe above: “documented” is not “locally reproduced.”
+
+| Harness | First-party lifecycle facts verified | Still unknown or overstated |
+| --- | --- | --- |
+| Codex | Subagents and isolated worktrees are documented | Cross-product quota normalization is not established |
+| Claude Dispatch | Cowork/Code routing, child states and transcripts, follow-ups, and forwarded approvals are documented | Public API, model control, quota inspection, and stop semantics |
+| Claude Code | Agent view documents scoped JSON inventory, logs, reply/attach, stop, background persistence, and per-session model control; Agent SDK documents sessions, permissions, hooks, and subagents | Account quota is not documented as a fresh named-model consumed percentage |
+| GitHub Copilot cloud agent | Branch-based background work, ephemeral Actions environment, tests, iteration, and optional pull requests are documented | General cross-app session control and model-specific quota facts |
+| Google Jules | REST creation, get/list, plan approval, activity interaction, and outputs are documented | Portable permission equivalence and immutable event provenance |
+| Cursor Background Agents | API creation/management and follow-ups plus isolated remote execution are documented | The canonical docs URL currently redirects in a generic fetch; security includes auto-run and repository write access |
+| OpenHands | Conversation messages, run/pause, confirmation states, status, and persistence are documented | Hosted-service parity with the self-hosted SDK and immutable audit guarantees |
+| goose | Local multi-provider execution, recipes, and subagent controls are documented in the project repository | Stable public lifecycle API and conformance behavior need a version-pinned run |
+
+The audit found no first-party basis for converting an unlabeled, shared, plan,
+weekly, context, token, or cost signal into model-specific consumed quota.
+Experiment 1 therefore starts from `unknown`, not `unavailable`, and requires
+positive evidence before enabling threshold automation.
 
 ## Primary sources
 
@@ -96,11 +179,17 @@ The local `Dispatch Beta` label and the public guide now corroborate each other.
 - [goose overview](https://block.github.io/goose/index.html)
 - [goose subagents](https://goose-docs.ai/docs/guides/context-engineering/subagents/)
 - [goose recipes](https://goose-docs.ai/docs/guides/recipes/)
+- [goose Agent Skills](https://goose-docs.ai/docs/guides/context-engineering/using-skills/)
+- [goose permission modes](https://goose-docs.ai/docs/guides/goose-permissions/)
+- [goose CLI providers](https://goose-docs.ai/docs/guides/cli-providers/)
 
 ## Research gaps
 
-- Reproduce the documented Claude Desktop Dispatch workflow and compare observed states to the guide.
+- Run the implementation-ready protocols in
+  [Experiment 0 and 1 protocols](experiments-0-1.md).
 - Find a supported API or export for Claude Desktop session inventory and usage meters.
 - Collect first-party Devin lifecycle and steering documentation.
 - Determine which adapters can expose immutable audit events rather than rendered summaries.
-- Test whether the Agent Skills package is accepted unchanged by Claude, Copilot, goose, and other compatible systems.
+- Test unattended Agent Skills invocation in GitHub Copilot, Cursor, OpenHands,
+  and goose; Codex and explicit interactive goose invocation now pass the
+  portable classification fixture.

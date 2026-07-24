@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:coordination-experiment:capability-manifest:0.1",
+  "title": "Evidence-backed adapter capability manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "generated_at",
+    "run_id",
+    "surface",
+    "capabilities"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "run_id": {"type": "string", "minLength": 1},
+    "surface": {"type": "string", "minLength": 1},
+    "capabilities": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["status", "evidence_count", "limitations"],
+        "properties": {
+          "status": {
+            "enum": ["pass", "fail", "unavailable", "not_tested", "unknown"]
+          },
+          "evidence_count": {"type": "integer", "minimum": 0},
+          "limitations": {
+            "type": "array",
+            "items": {"type": "string", "minLength": 1}
+          }
+        }
+      }
+    }
+  }
+}

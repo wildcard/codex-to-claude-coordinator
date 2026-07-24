@@ -1,0 +1,22 @@
+{
+  "name": "codex-to-claude-coordinator",
+  "version": "0.1.0",
+  "description": "Portable coordination contracts and harness adapters for supervised agent work.",
+  "author": {
+    "name": "wildcard"
+  },
+  "homepage": "https://github.com/wildcard/codex-to-claude-coordinator",
+  "repository": "https://github.com/wildcard/codex-to-claude-coordinator",
+  "license": "MIT",
+  "keywords": [
+    "codex",
+    "claude",
+    "claude-code",
+    "multi-agent",
+    "cross-harness",
+    "coordination",
+    "orchestration",
+    "delegation"
+  ],
+  "skills": ["./skills/"]
+}

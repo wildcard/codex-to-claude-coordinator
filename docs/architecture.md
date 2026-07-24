@@ -1,6 +1,6 @@
 # Architecture: portable coordinator with harness adapters
 
-Status: initial design
+Status: portable core 0.1 implemented; adapters remain experimental
 Last checked: 2026-07-23
 
 ## Goal
@@ -62,7 +62,57 @@ Unsupported capabilities must return `unavailable`, not a guessed value.
 3. **Harness adapter:** product-specific UI, API, CLI, and permission behavior.
 4. **Project policy:** repository instructions and validation commands.
 
-The current Fable, Opus, and Sonnet thresholds belong to the user-policy layer. The portable core should express capability tiers such as `simple`, `tricky`, and `complex`, while the Claude adapter resolves those tiers to currently available model names.
+The current Fable, Opus, and Sonnet resolution belongs to the user-policy and
+Claude-adapter layers. The portable core emits `routine`, `strong`, or `max`
+capability intent plus a separate `low`, `medium`, or `high` reasoning effort.
+An adapter resolves both against controls it can prove.
+
+## Protocol boundary
+
+The portable transport is an append-only JSON Lines stream. A coordinator and
+worker do not need a bidirectional product integration; they need a shared,
+scoped channel that can carry:
+
+- assignment and worker state;
+- one blocking question and one concrete steer;
+- approval request and human-authored decision;
+- evidence and exact-change review;
+- stop request followed by a terminal state;
+- final handoff with actual worker provenance.
+
+This supports file-drop, standard input/output, a local socket, an SDK event
+stream, or a product API without changing lifecycle semantics. The transport
+must never manufacture an approval decision or treat archive, idle, or a
+rendered summary as terminal proof.
+
+## Plugin projections
+
+The repository keeps one source skill tree and thin harness packaging:
+
+```text
+.claude-plugin/       # Claude Code plugin and marketplace metadata
+.codex-plugin/        # Codex plugin metadata
+skills/
+  coordination-core/  # portable classifier, schemas, protocol, validators
+  coordination-conformance/
+                       # evidence recorder, redactor, capability manifest
+  codex-to-claude-coordinator/
+                       # Claude-specific adapter policy
+```
+
+Agent Skills-compatible harnesses should consume the portable skill unchanged
+where possible. Product commands, status names, transcript locations, model
+aliases, and usage meters belong in an adapter reference or script. A new
+adapter should declare a capability manifest and pass the same protocol tests
+before gaining convenience commands or UI automation.
+
+The intended expansion order is:
+
+1. Codex coordinator to Claude Code worker;
+2. Claude Dispatch and Claude Code-native coordinators to Claude Code workers;
+3. Claude Agent SDK as a programmatic adapter;
+4. Codex to Jules or OpenHands as the first non-Claude worker;
+5. Cursor as coordinator or worker after the portable contract is stable.
 
 ## Evidence model
 
@@ -78,4 +128,8 @@ This prevents an agent's fluent recommendation from silently becoming product tr
 
 ## Initial conclusion
 
-Claude can coordinate internal Claude Code work through subagents, agent teams, hooks, background agents, and the Agent SDK. That does not yet prove it can replace an outer coordinator that inventories desktop sessions, reads account quota, changes models, validates cross-harness state, and controls external-action approvals. The architecture therefore supports Claude-native coordination as an adapter and experiment, not as an assumed replacement.
+Claude can coordinate internal Claude Code work through subagents, agent teams,
+hooks, background agents, Dispatch, and the Agent SDK. That does not prove it
+can replace a cross-harness coordinator that normalizes sessions, evidence,
+model controls, and human approval across products. Claude-native coordination
+is therefore a first-class adapter and experiment, not an assumed replacement.

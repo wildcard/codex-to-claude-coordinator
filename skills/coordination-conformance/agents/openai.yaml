@@ -1,0 +1,4 @@
+interface:
+  display_name: "Coordination Conformance"
+  short_description: "Test harness capabilities from safe evidence"
+  default_prompt: "Use $coordination-conformance to record and validate this harness capability experiment."

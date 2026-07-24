@@ -1,0 +1,2 @@
+Beta is the second generic fixture note.
+It exists to verify scoped multi-file reading.

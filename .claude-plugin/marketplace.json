@@ -1,0 +1,14 @@
+{
+  "name": "codex-to-claude-coordinator",
+  "owner": {
+    "name": "wildcard"
+  },
+  "description": "Portable coordination skills and harness adapters.",
+  "plugins": [
+    {
+      "name": "codex-to-claude-coordinator",
+      "source": "./",
+      "description": "Coordinate delegated agent work through evidence-driven lifecycle contracts."
+    }
+  ]
+}

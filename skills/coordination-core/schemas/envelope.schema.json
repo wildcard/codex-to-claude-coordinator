@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:coordination-core:envelope:0.1",
+  "title": "Coordination envelope",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "event_id",
+    "task_id",
+    "seq",
+    "emitted_at",
+    "emitter",
+    "type",
+    "body"
+  ],
+  "properties": {
+    "schema_version": {"const": "0.1"},
+    "event_id": {"type": "string", "minLength": 1},
+    "task_id": {"type": "string", "minLength": 1},
+    "seq": {"type": "integer", "minimum": 0},
+    "emitted_at": {"type": "string", "format": "date-time"},
+    "emitter": {"enum": ["coordinator", "worker", "human"]},
+    "type": {
+      "enum": [
+        "assignment",
+        "state",
+        "question",
+        "steer",
+        "approval_request",
+        "approval_decision",
+        "evidence",
+        "review",
+        "stop",
+        "handoff"
+      ]
+    },
+    "body": {"type": "object"}
+  }
+}

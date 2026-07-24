@@ -1,43 +1,60 @@
 ---
 name: codex-to-claude-coordinator
-description: Coordinate Claude Desktop and Claude Code delegation from session selection through validated handoff. Use whenever starting, resuming, steering, monitoring, or auditing Claude work; choosing a Claude model from visible quota usage; reviewing transcripts; resolving agent questions; enforcing review and test gates; or reporting blockers and completion evidence.
+description: Coordinate Codex-to-Claude and cross-harness delegation from session selection through validated handoff. Use for Claude Code, Claude Desktop, Cowork, or background-agent work that needs a multi-agent coordinator to start, resume, steer, monitor, stop, review, test, resolve questions, or report blockers and completion evidence.
 ---
 
 # Codex to Claude Coordinator
 
-Coordinate Claude work as an evidence-driven lifecycle. Recheck model usage before every new session and every steer, keep the assigned scope explicit, and distinguish local implementation readiness from external approval or release.
+Coordinate Claude work as an evidence-driven lifecycle. Use the portable
+`coordination-core` skill for classification and envelopes, then resolve its
+requested capability tier through this Claude adapter. Keep the assigned scope
+explicit and distinguish local implementation readiness from external approval
+or release.
 
 ## Apply Policy Precedence
 
 Use this order:
 
 1. Follow an explicit model choice from the user.
-2. Inspect the current visible Claude model-usage indicators.
-3. Classify the delegated work as simple, tricky, or complex.
-4. Select the model with the policy below.
-5. Follow repository, workspace, and session-specific rules.
+2. Classify the delegated work with `coordination-core`.
+3. Probe which Claude workers and model controls are actually available.
+4. Inspect any current, explicitly labeled Claude usage indicators.
+5. Resolve the requested capability tier with the policy below.
+6. Follow repository, workspace, and session-specific rules.
 
-Never reuse a stale quota reading for a later start or steer. Inspect again immediately before acting. If the current Claude session cannot change models after it starts, record that constraint and either continue with the current model or start a replacement session; never claim that a steer changed an immutable session model.
+Before session creation, record the probe time, availability facts, requested
+tier, selected worker, and reasoning effort. Before a later steer, inspect the
+session's actual worker and model. Do not imply that a steer changed them unless
+the adapter proves that the running session supports that operation. Start a
+replacement session only when the continuity cost and remaining work justify it.
 
 ## Select the Model
 
-Interpret each threshold as the percentage of quota already consumed, not the percentage remaining. Apply a model threshold only when the visible surface explicitly labels that percentage for the named model. Do not substitute context usage, a shared plan or weekly window, token counts, or an unlabeled progress bar.
+Treat model choice and reasoning effort as independent. Map the portable
+requested tier to Claude as follows:
 
-| Work class | Model selection |
+| Requested tier | Model selection |
 | --- | --- |
-| Simple | Use Sonnet 5. |
-| Tricky | Default to Opus. Use Sonnet 5 if Opus is unavailable or its consumed usage is 50% or higher. Do not use Fable for merely tricky work. |
-| Complex | Use Fable only when it is available and its consumed usage is below 25%. Otherwise use Opus when it is available and its consumed usage is below 50%. Otherwise use Sonnet 5. |
+| Routine | Use Sonnet 5 when selectable; otherwise use the available default. |
+| Strong | Use Opus when selectable; otherwise use Sonnet 5 or the available default. |
+| Max | Use Fable only when selectable and an explicit Fable consumed meter is below 25%. Otherwise use Opus when selectable, then Sonnet 5 or the available default. |
 
-Treat work as:
+Apply a percentage threshold only when the surface explicitly labels the
+percentage as consumed usage for the named model. Do not substitute context
+usage, a shared plan or weekly window, token counts, remaining percentage, or an
+unlabeled bar. No verified Opus-specific percentage currently exists in this
+project, so the former Opus-below-50% rule is not enforceable and is not used.
 
-- Simple when it is bounded, low-risk, easily verified, and needs little architectural judgment.
-- Tricky when it crosses files or systems, requires debugging or careful judgment, or has meaningful review risk.
-- Complex when it requires substantial architecture, research synthesis, ambiguous tradeoffs, or coordinated multi-stage execution.
+If a model-specific usage display is unavailable, stale, or ambiguous, do not
+infer that Fable satisfies a threshold. A visible shared plan limit is an
+availability warning, not an Opus-specific percentage. Model entitlement,
+organization policy, version, and data-retention mode are availability facts
+independent of quota.
 
-If the model-specific usage display is unavailable, stale, or ambiguous, do not infer that Fable is eligible. Use Opus for tricky or complex work when Opus availability is clear; otherwise use Sonnet 5. Treat a visible shared plan limit as an availability warning, not as Opus's model-specific consumed percentage.
-
-Record the selected model, work class, and the visible usage facts in the coordination notes. Do not expose credentials or unrelated account details.
+Map portable effort to the closest control the target surface supports. Record
+the requested tier, requested effort, actual resolved worker/model or `unknown`,
+and exact visible usage facts. Do not expose credentials or unrelated account
+details.
 
 ## Inspect Before Delegating
 
@@ -47,10 +64,16 @@ Before starting or steering:
 2. Inspect existing Claude sessions and transcripts for the same task, scoped to the target project. Prefer `claude agents --cwd <project> --json` and `claude logs <session-id>` when the installed Claude Code version supports them.
 3. Reuse a relevant active session when continuity matters.
 4. Create a new session only for genuinely separate work.
-5. Inspect current Claude usage and apply the model policy.
+5. Probe Claude availability, inspect any relevant labeled usage, and resolve
+   tier plus effort.
 6. Identify the exact objective, owned files or responsibility, required evidence, and external-action boundary.
 
 Do not enumerate or read unrelated project transcripts. Do not transfer private material from one project into another. Give Claude only the context required for the delegated task.
+
+Treat raw `claude logs` output as private. Even a generic task can render account
+identity, organization labels, absolute paths, and terminal chrome. Keep raw
+logs outside the repository and admit only reviewed redacted derivatives through
+`coordination-conformance`.
 
 ## Start a Session
 
@@ -69,7 +92,9 @@ Ask Claude to report its initial understanding, chosen approach, and any immedia
 
 ## Steer an Existing Session
 
-Before every steer, inspect current usage again and select the eligible model. Then:
+Before every steer, read the actual session model and any relevant availability
+change. Keep the running worker unless switching is supported or replacement is
+explicitly justified. Then:
 
 1. Read the latest transcript and terminal state.
 2. Verify claims against the working tree, tests, pull request, or service state.
@@ -90,7 +115,8 @@ Before any authorized push:
 4. Address critical, major, and substantive minor findings.
 5. Run the repository's required tests and targeted integration checks.
 6. Verify the exact commit that will be pushed.
-7. Capture reproducible demo or live end-to-end evidence when the task requires it.
+7. Capture reproducible demo or live end-to-end evidence when the task requires
+   it.
 
 If `/review` is unavailable, fail closed: record the missing capability and require an independent exact-diff review through an available reviewer agent or equivalent review command before any authorized push. Do not describe an ordinary self-review as `/review`.
 
@@ -125,7 +151,7 @@ Before reporting a blocker externally:
 For each session, report:
 
 - task and session identity;
-- selected model, work class, and quota basis;
+- requested tier and effort, actual worker/model, and selection evidence;
 - current commit or working-tree state;
 - implemented outcome;
 - review results;

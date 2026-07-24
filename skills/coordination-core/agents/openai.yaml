@@ -1,0 +1,4 @@
+interface:
+  display_name: "Coordination Core"
+  short_description: "Portable agent coordination contracts"
+  default_prompt: "Use $coordination-core to classify and coordinate this delegated task."

@@ -1,0 +1,53 @@
+name: release-candidate
+
+on:
+  pull_request:
+  push:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["3.9", "3.12"]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install test dependency
+        run: python -m pip install -r skills/coordination-conformance/requirements.txt
+
+      - name: Run unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Verify launch package
+        run: python scripts/verify_launch.py
+
+      - name: Verify skills CLI discovery
+        run: npx --yes skills@1.5.20 add . --list
+
+      - name: Rehearse selected-agent installation
+        run: |
+          install_root="$(mktemp -d)"
+          git init -q "$install_root"
+          cd "$install_root"
+          npx --yes skills@1.5.20 add "$GITHUB_WORKSPACE" \
+            --skill '*' \
+            --agent codex claude-code cursor github-copilot goose openhands \
+            --copy \
+            -y
+          npx --yes skills@1.5.20 list --json > inventory.json
+          python "$GITHUB_WORKSPACE/scripts/verify_install_inventory.py" \
+            inventory.json \
+            --install-root "$install_root"

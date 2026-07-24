@@ -1,0 +1,2 @@
+Alpha is the first generic fixture note.
+It contains no account or project information.

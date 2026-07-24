@@ -22,6 +22,8 @@ This repository develops a portable coordination skill with Codex as the first o
 ## Canonical artifacts
 
 - `skills/codex-to-claude-coordinator/` is the distributable skill.
+- `skills/coordination-core/` is the vendor-neutral lifecycle contract.
+- `skills/coordination-conformance/` is the evidence and capability test kit.
 - `docs/architecture.md` defines the portable core and adapter boundary.
 - `docs/harness-landscape.md` tracks evidence about candidate coordinators.
 - `docs/research-roadmap.md` defines planned experiments and acceptance evidence.

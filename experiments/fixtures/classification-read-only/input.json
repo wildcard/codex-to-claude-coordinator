@@ -1,0 +1,10 @@
+{
+  "files_in_scope": 1,
+  "crosses_systems": false,
+  "prior_attempt_failed": false,
+  "plan_required": false,
+  "external_actions_requested": [],
+  "reversible": true,
+  "expected_tool_calls": "small",
+  "independent_subtasks": 1
+}
